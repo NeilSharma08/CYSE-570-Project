@@ -4,6 +4,14 @@
 #include "string.h"
 int main(int argc, char** argv)
 {
+    print("Blank program started!\n");
+    print("Arguments:\n");
+    for (int i = 0; i < argc; i++)
+    {
+        print(argv[i]);
+        print("\n");
+    }   
+    /*
     while(1)
     {
         print(argv[0]);
@@ -12,5 +20,6 @@ int main(int argc, char** argv)
             
         }
     }
+        */
     return 0;
 }
