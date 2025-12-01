@@ -19,6 +19,7 @@
 #define PEACHOS_MAX_FILE_DESCRIPTORS 512
 
 #define PEACHOS_MAX_PATH 108
+#define PEACHOS_MAX_TASKS 256
 
 #define PEACHOS_TOTAL_GDT_SEGMENTS 6
 
@@ -36,5 +37,8 @@
 #define PEACHOS_MAX_ISR80H_COMMANDS 1024
 
 #define PEACHOS_KEYBOARD_BUFFER_SIZE 1024
+
+// HZ is the number of ticks per second
+#define PIT_TICKS_PER_SECOND 1000
 
 #endif

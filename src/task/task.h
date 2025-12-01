@@ -4,6 +4,11 @@
 #include "config.h"
 #include "memory/paging/paging.h"
 
+#define TASK_READY 0
+#define TASK_BLOCKED 1
+
+#define TASK_FLAG_IDLE 0b00000001
+
 struct interrupt_frame;
 struct registers
 {
@@ -37,6 +42,12 @@ struct task
     // The process of the task
     struct process* process;
 
+    // The state of the task
+    int state;
+
+    // The flags of the task
+    int flags;
+
     // The next task in the linked list
     struct task* next;
 
@@ -64,5 +75,8 @@ int copy_string_from_task(struct task* task, void* virtual, void* phys, int max)
 void* task_get_stack_item(struct task* task, int index);
 void* task_virtual_address_to_physical(struct task* task, void* virtual_address);
 void task_next();
+
+// Expose task list head for checking ready tasks
+extern struct task* task_head;
 
 #endif

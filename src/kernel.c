@@ -10,11 +10,13 @@
 #include "isr80h/isr80h.h"
 #include "task/task.h"
 #include "task/process.h"
+#include "pit/ticks.h"
 #include "fs/file.h"
 #include "disk/disk.h"
 #include "fs/pparser.h"
 #include "disk/streamer.h"
 #include "task/tss.h"
+#include "task/idle.h"
 #include "gdt/gdt.h"
 #include "config.h"
 #include "status.h"
@@ -127,6 +129,9 @@ struct gdt_structured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {
 
 void kernel_main()
 {
+    // set PIT to 1000 Hz
+    pit_set_frequency(PIT_TICKS_PER_SECOND);
+    
     terminal_initialize();
     memset(gdt_real, 0x00, sizeof(gdt_real));
     gdt_structured_to_gdt(gdt_real, gdt_structured, PEACHOS_TOTAL_GDT_SEGMENTS);
@@ -146,6 +151,9 @@ void kernel_main()
     // Initialize the interrupt descriptor table
     idt_init();
 
+    // Initialize PIT/ticks handling 
+    pic_timer_init();
+
     // Setup the TSS
     memset(&tss, 0x00, sizeof(tss));
     tss.esp0 = 0x600000;
@@ -153,6 +161,9 @@ void kernel_main()
 
     // Load the TSS
     tss_load(0x28);
+
+    // Initialize idle task BEFORE paging so it gets set up properly
+    idle_init();
 
     // Setup paging
     kernel_chunk = paging_new_4gb(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
@@ -168,32 +179,13 @@ void kernel_main()
 
     // Initialize all the system keyboards
     keyboard_init();
-        
+    
     struct process* process = 0;
-    int res = process_load_switch("0:/shell.elf", &process);
+    int res = process_load("0:/shell.elf", &process);
     if (res != PEACHOS_ALL_OK)
     {
         panic("Failed to load shell.elf\n");
     }
 
-/*
-    struct command_argument argument;
-    strcpy(argument.argument, "Testing!");
-    argument.next = 0x00; 
-
-    process_inject_arguments(process, &argument);
-
-    res = process_load_switch("0:/blank.elf", &process);
-    if (res != PEACHOS_ALL_OK)
-    {
-        panic("Failed to load blank.elf\n");
-    }
-
-    strcpy(argument.argument, "Abc!");
-    argument.next = 0x00; 
-    process_inject_arguments(process, &argument);
-*/
     task_run_first_ever_task();
-
-    while(1) {}
 }

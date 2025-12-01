@@ -85,3 +85,16 @@ void* isr80h_command9_exit(struct interrupt_frame* frame)
     task_next();
     return 0;
 }
+void* isr80h_command10_sleep(struct interrupt_frame* frame)
+{
+    int milliseconds = (int) task_get_stack_item(task_current(), 0);
+    process_sleep(task_current()->process, milliseconds);
+    return 0;
+}
+
+void* isr80h_command11_wake(struct interrupt_frame* frame)
+{
+    struct process* process = task_current()->process;
+    process->state = PROCESS_STATE_READY;
+    return 0;
+}

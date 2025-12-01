@@ -11,6 +11,8 @@ global peachos_process_load_start:function
 global peachos_process_get_arguments:function 
 global peachos_system:function
 global peachos_exit:function
+global peachos_sleep:function
+global peachos_wake:function
 
 ; void print(const char* filename)
 print:
@@ -104,6 +106,26 @@ peachos_exit:
     push ebp
     mov ebp, esp
     mov eax, 9 ; Command 9 process exit
+    int 0x80
+    pop ebp
+    ret
+
+; void peachos_sleep(int seconds)
+peachos_sleep:
+    push ebp
+    mov ebp, esp
+    mov  eax, 10        ; Command 10 pauses process
+    push dword [ebp+8]  ; Push seconds argument onto stack for syscall
+    int  0x80           
+    add esp, 4
+    pop ebp
+    ret
+
+; void peachos_wake()
+peachos_wake:
+    push ebp
+    mov ebp, esp
+    mov eax, 11 ; Command 11 process wake
     int 0x80
     pop ebp
     ret

@@ -28,6 +28,16 @@ char* itoa(int i)
     return &text[loc];
 }
 
+int atoi(const char *s)
+{
+  int n;
+
+  n = 0;
+  while('0' <= *s && *s <= '9')
+    n = n*10 + *s++ - '0';
+  return n;
+}
+
 void* malloc(size_t size)
 {
     return peachos_malloc(size);
@@ -36,4 +46,14 @@ void* malloc(size_t size)
 void free(void* ptr)
 {
     peachos_free(ptr);
+}
+
+void sleep(int seconds) {
+    peachos_sleep(seconds);
+}
+
+
+void wake()
+{
+    peachos_wake();
 }

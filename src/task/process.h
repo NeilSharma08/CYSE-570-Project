@@ -6,10 +6,24 @@
 #include "task.h"
 #include "config.h"
 
-#define PROCESS_FILETYPE_ELF 0
+#define PROCESS_FILETYPE_UNKNOWN 0
 #define PROCESS_FILETYPE_BINARY 1
+#define PROCESS_FILETYPE_ELF 2
 
 typedef unsigned char PROCESS_FILETYPE;
+
+/** Process states. Mapped to task states.
+ * Clean up be have states in config.h later
+ * if needed.
+ */ 
+
+typedef enum {
+    PROCESS_STATE_READY = 0,
+    PROCESS_STATE_BLOCKED,
+    PROCESS_STATE_WAITING,
+    PROCESS_STATE_RUNNING,
+    PROCESS_STATE_TERMINATED
+} process_state_t;
 
 struct process_allocation
 {
@@ -67,6 +81,9 @@ struct process
 
     // The arguments of the process.
     struct process_arguments arguments;
+
+    uint32_t wake_tick; //Number of ticks to sleep before waking
+    process_state_t state; //PROCESS_READY, PROCESS_BLOCKED, etc.
 };
 
 int process_switch(struct process* process);
@@ -81,5 +98,10 @@ void process_free(struct process* process, void* ptr);
 void process_get_arguments(struct process* process, int* argc, char*** argv);
 int process_inject_arguments(struct process* process, struct command_argument* root_argument);
 int process_terminate(struct process* process);
+
+// Sleep and wake functions 
+void process_sleep(struct process* process, int seconds);
+void process_wake_up_pending(void); // Helper to check sleepers
+int process_wake(struct process* process);
 
 #endif

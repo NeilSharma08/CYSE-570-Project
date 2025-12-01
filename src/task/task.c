@@ -8,6 +8,7 @@
 #include "memory/paging/paging.h"
 #include "loader/formats/elfloader.h"
 #include "idt/idt.h"
+#include "keyboard/keyboard.h"
 
 // The current task that is running
 struct task *current_task = 0;
@@ -61,14 +62,62 @@ out:
     return task;
 }
 
-struct task *task_get_next()
+struct task* task_get_next()
 {
-    if (!current_task->next)
+    if (!current_task)
     {
         return task_head;
     }
 
-    return current_task->next;
+    struct task* next = current_task->next;
+    if (!next)
+    {
+        next = task_head;
+    }
+
+    struct task* start = next;
+    struct task* idle_fallback = NULL;
+    
+    // Look for ready tasks, prefer non-idle tasks
+    do
+    {
+        if (next->state == TASK_READY)
+        {
+            // If this is an idle task, save it as fallback but keep looking
+            if (next->flags & TASK_FLAG_IDLE)
+            {
+                if (!idle_fallback)
+                {
+                    idle_fallback = next;
+                }
+            }
+            else
+            {
+                // Found a non-idle ready task, use it
+                return next;
+            }
+        }
+        
+        next = next->next;
+        if (!next)
+        {
+            next = task_head;
+        }
+    } while (next != start);
+
+    // No non-idle ready tasks found, use idle if we found one
+    if (idle_fallback)
+    {
+        return idle_fallback;
+    }
+
+    // No ready tasks at all - shouldn't happen with idle task
+    // Return current_task as last resort
+    if (current_task)
+    {
+        return current_task;
+    }
+    return task_head;
 }
 
 static void task_list_remove(struct task *task)
@@ -91,6 +140,11 @@ static void task_list_remove(struct task *task)
     if (task == current_task)
     {
         current_task = task_get_next();
+    }
+
+    if (task->next)
+    {
+        task->next->prev = task->prev;
     }
 }
 
@@ -119,6 +173,9 @@ void task_next()
 int task_switch(struct task *task)
 {
     current_task = task;
+    /* THis was causing problems.  Added to ensure the global current process follows the running task so
+     * per-process resources are accurate. */
+    process_switch(task->process);
     paging_switch(task->page_directory);
     return 0;
 }
@@ -213,6 +270,10 @@ void task_run_first_ever_task()
 int task_init(struct task *task, struct process *process)
 {
     memset(task, 0, sizeof(struct task));
+
+    // Initialize the task state to ready
+    task->state = TASK_READY;
+
     // Map the entire 4GB address space to its self
     task->page_directory = paging_new_4gb(PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
     if (!task->page_directory)

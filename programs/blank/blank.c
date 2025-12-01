@@ -11,6 +11,9 @@ int main(int argc, char** argv)
         print(argv[i]);
         print("\n");
     }   
+    print("Sleeping for 1 second...\n");
+    sleep(10);
+    print("Awake!\n");
     /*
     while(1)
     {
