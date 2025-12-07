@@ -87,8 +87,10 @@ void* isr80h_command9_exit(struct interrupt_frame* frame)
 }
 void* isr80h_command10_sleep(struct interrupt_frame* frame)
 {
-    int milliseconds = (int) task_get_stack_item(task_current(), 0);
-    process_sleep(task_current()->process, milliseconds);
+    // Get seconds from user program
+    int seconds = (int) task_get_stack_item(task_current(), 0);
+    // use seconds for process_sleep
+    process_sleep(task_current()->process, seconds);
     return 0;
 }
 

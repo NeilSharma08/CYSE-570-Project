@@ -17,13 +17,8 @@ typedef unsigned char PROCESS_FILETYPE;
  * if needed.
  */ 
 
-typedef enum {
-    PROCESS_STATE_READY = 0,
-    PROCESS_STATE_BLOCKED,
-    PROCESS_STATE_WAITING,
-    PROCESS_STATE_RUNNING,
-    PROCESS_STATE_TERMINATED
-} process_state_t;
+#define PROCESS_STATE_READY 0
+#define PROCESS_STATE_BLOCKED 1
 
 struct process_allocation
 {
@@ -83,7 +78,7 @@ struct process
     struct process_arguments arguments;
 
     uint32_t wake_tick; //Number of ticks to sleep before waking
-    process_state_t state; //PROCESS_READY, PROCESS_BLOCKED, etc.
+    uint32_t state; //PROCESS_READY, PROCESS_BLOCKED, etc.
 };
 
 int process_switch(struct process* process);

@@ -8,7 +8,11 @@
 
 
 uint32_t get_ticks(void) {
-    return pic_timer_get_ticks();   // calls the assembly function to get ticks
+    /*Warning: disable interrrupts to prevent potential race condition. Created cli and sti in c
+    * but disabling interrupts causes problems when called frequently from syscalls.
+    * I think this is atomic so don't need to disable interrupts    */
+    uint32_t count = pic_timer_get_ticks();   // calls the assembly function to get ticks
+    return count;
 }
 
 void pic_timer_callback(struct interrupt_frame* frame)
@@ -22,7 +26,7 @@ void pic_timer_callback(struct interrupt_frame* frame)
     // Acknowledge the interrupt so we receive more.
     outb(0x20, 0x20);
 
-    // Perform a scheduler tick to enable pre-emption
+    // Switch to the next task  
     task_next();
 }
 

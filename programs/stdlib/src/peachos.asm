@@ -13,6 +13,8 @@ global peachos_system:function
 global peachos_exit:function
 global peachos_sleep:function
 global peachos_wake:function
+global peachos_get_ticks:function
+global peachos_get_idle_ticks:function
 
 ; void print(const char* filename)
 print:
@@ -126,6 +128,15 @@ peachos_wake:
     push ebp
     mov ebp, esp
     mov eax, 11 ; Command 11 process wake
+    int 0x80
+    pop ebp
+    ret
+
+; uint32_t peachos_get_ticks()
+peachos_get_ticks:
+    push ebp
+    mov ebp, esp
+    mov eax, 12 ; Command 12 get system ticks
     int 0x80
     pop ebp
     ret

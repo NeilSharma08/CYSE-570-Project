@@ -14,5 +14,6 @@ int pic_timer_get_ticks(void);       /* Implemented in assembly */
 void pic_timer_init(void);            /* Implemented in C */
 void pit_set_frequency(uint32_t hz); /* Implemented in C */
 void pic_timer_callback(struct interrupt_frame* frame); /* Implemented in C */
+uint32_t get_ticks(void);            /* Implemented in C */
 
 #endif

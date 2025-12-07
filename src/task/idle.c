@@ -1,15 +1,15 @@
 #include "process.h"
 #include "task.h"
 #include "kernel.h"
+#include "pit/ticks.h"
 
-static void idle_process()
-{
-    while(1)
-    {
-        // Sleep for 1ms to yield the CPU
-        process_sleep(task_current()->process, 1);
-    }
-}
+/* Idle task is disabled in the kernel. 
+* Causes qemu emulator to crash.
+*/
+
+
+extern void idle_task();
+
 
 void idle_init()
 {
@@ -19,8 +19,10 @@ void idle_init()
         panic("Failed to create idle process");
     }
 
-    // Set the instruction pointer to the idle process function
-    proc->task->registers.ip = (uint32_t)idle_process;
+    /* Sets the instruction pointer to hlt in asm.
+    * This causes a privledge error in the kernel
+    * qemu will crash */
+    proc->task->registers.ip = (uint32_t)idle_task;
     
     // Mark this task as the idle task.
     proc->task->flags = TASK_FLAG_IDLE;

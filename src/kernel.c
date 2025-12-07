@@ -162,8 +162,8 @@ void kernel_main()
     // Load the TSS
     tss_load(0x28);
 
-    // Initialize idle task BEFORE paging so it gets set up properly
-    idle_init();
+    // Idle task disabled, causes qemu to crash
+    // idle_init();
 
     // Setup paging
     kernel_chunk = paging_new_4gb(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
@@ -179,7 +179,7 @@ void kernel_main()
 
     // Initialize all the system keyboards
     keyboard_init();
-    
+        
     struct process* process = 0;
     int res = process_load("0:/shell.elf", &process);
     if (res != PEACHOS_ALL_OK)
