@@ -116,3 +116,35 @@ int tonumericdigit(char c)
 {
     return c - 48;
 }
+
+// Used to print hex for debugging
+
+static char hex_chars[] = "0123456789ABCDEF";
+
+void hex(uint32_t value)
+{
+    // Buffer for "0x" + 8 hex digits + null terminator
+    char buffer[11]; 
+    buffer[0] = '0';
+    buffer[1] = 'x';
+    buffer[10] = '\0'; 
+
+    // Loop 8 times to handle the the 32-bit value
+    for (int i = 0; i < 8; i++)
+    {
+        // i=0 corresponds to the rightmost character
+        int pos = 9 - i;
+        
+        // Extract the first hex value
+        uint8_t nibble = value & 0xF;
+        
+        // Map the 4 bits to the corresponding hex character
+        buffer[pos] = hex_chars[nibble];
+        
+        // Shift the value right by 4 bits 
+        value >>= 4;
+    }
+  
+
+    print(buffer);
+}

@@ -95,6 +95,11 @@ void idt_init()
 
     idt_register_interrupt_callback(0x20, idt_clock);
 
+    /* ===== REGISTER PAGE FAULT HANDLER (INT 14) ===== */
+    extern void page_fault_handler_c(struct interrupt_frame* frame);
+    idt_register_interrupt_callback(14, page_fault_handler_c);
+    /* ================================================ */
+
     // Load the interrupt descriptor table
     idt_load(&idtr_descriptor);
 }

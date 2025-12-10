@@ -20,6 +20,22 @@ typedef unsigned char PROCESS_FILETYPE;
 #define PROCESS_STATE_READY 0
 #define PROCESS_STATE_BLOCKED 1
 
+/* ===== DEMAND PAGING STRUCT DEFINITIONS ===== */
+
+#define PROCESS_MAX_LAZY_SEGS 8
+
+struct process_elf_lazy_segment
+{
+    void* vaddr_start;    
+    void* vaddr_end;      
+    uint32_t file_offset; 
+    uint32_t file_size;   
+    uint32_t mem_size;    
+    uint32_t flags;       
+};
+
+/* ============================================= */
+
 struct process_allocation
 {
     void* ptr;
@@ -78,7 +94,12 @@ struct process
     struct process_arguments arguments;
 
     uint32_t wake_tick; //Number of ticks to sleep before waking
-    uint32_t state; //PROCESS_READY, PROCESS_BLOCKED, etc.
+    uint32_t state; //PROCESS_READY, PROCESS_BLOCKED
+
+    /* ===== DEMAND PAGING PROCESS FIELDS ===== */
+    struct process_elf_lazy_segment elf_lazy[PROCESS_MAX_LAZY_SEGS];
+    int elf_lazy_count;
+    /* ======================================== */
 };
 
 int process_switch(struct process* process);

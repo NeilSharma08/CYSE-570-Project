@@ -420,10 +420,13 @@ static int process_map_elf(struct process* process)
     struct elf_file* elf_file = process->elf_file;
     struct elf_header* header = elf_header(elf_file);
     struct elf32_phdr* phdrs = elf_pheader(header);
+
+    process->elf_lazy_count = 0;
+
     for (int i = 0; i < header->e_phnum; i++)
     {
         struct elf32_phdr* phdr = &phdrs[i];
-        void* phdr_phys_address = elf_phdr_phys_address(elf_file, phdr);
+        /*void* phdr_phys_address = elf_phdr_phys_address(elf_file, phdr);
         int flags = PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL;
         if (phdr->p_flags & PF_W)
         {
@@ -433,7 +436,28 @@ static int process_map_elf(struct process* process)
         if (ISERR(res))
         {
             break;
-        }
+        }*/
+
+        if (phdr->p_type != PT_LOAD)
+            continue;
+
+        if (process->elf_lazy_count >= PROCESS_MAX_LAZY_SEGS)
+            return -ENOMEM;
+
+        struct process_elf_lazy_segment* seg = &process->elf_lazy[process->elf_lazy_count++];
+
+        uintptr_t vstart = phdr->p_vaddr;
+        uintptr_t vend   = phdr->p_vaddr + phdr->p_memsz;
+
+        seg->vaddr_start = (void*) paging_align_to_lower_page((void*)vstart);
+        seg->vaddr_end   = (void*) paging_align_address((void*)vend);
+
+        seg->file_offset = phdr->p_offset;
+        seg->file_size   = phdr->p_filesz;
+        seg->mem_size    = phdr->p_memsz;
+        seg->flags       = phdr->p_flags;
+
+        // DO NOT MAP ANYTHING HERE — demand paging loads them lazily.
     }
     return res;
 }
