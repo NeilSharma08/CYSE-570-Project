@@ -17,6 +17,9 @@ global peachos_get_ticks:function
 global peachos_get_idle_ticks:function
 global peachos_put_pixel:function
 global peachos_draw_rect:function
+global peachos_draw_hline:function
+global peachos_draw_vline:function
+global peachos_draw_grid:function
 
 ; void print(const char* filename)
 print:
@@ -164,7 +167,45 @@ peachos_draw_rect:
     mov edx, [ebp+16]   ; Load w
     mov esi, [ebp+20]   ; Load h
     mov edi, [ebp+24]   ; Load color 
-    mov eax, 15 ; Command 14 draw rect
+    mov eax, 15 ; Command 15 draw rect
+    int 0x80
+    pop ebp
+    ret
+
+; void peachos_draw_hline() 
+peachos_draw_hline: 
+    push ebp
+    mov ebp, esp
+    mov ebx, [ebp+8]    ; Load x_s 
+    mov ecx, [ebp+12]   ; Load y_s 
+    mov edx, [ebp+16]   ; Load x_e
+    mov esi, [ebp+20]   ; Load color
+    mov edi, [ebp+24]   ; Load thickness 
+    mov eax, 16 ; Command 16 draw hline
+    int 0x80
+    pop ebp
+    ret
+
+; void peachos_draw_vline() 
+peachos_draw_vline: 
+    push ebp
+    mov ebp, esp
+    mov ebx, [ebp+8]    ; Load x_s 
+    mov ecx, [ebp+12]   ; Load y_s 
+    mov edx, [ebp+16]   ; Load y_e
+    mov esi, [ebp+20]   ; Load color
+    mov edi, [ebp+24]   ; Load thickness 
+    mov eax, 17 ; Command 17 draw vline
+    int 0x80
+    pop ebp
+    ret
+
+; void peachos_draw_grid() 
+peachos_draw_grid: 
+    push ebp
+    mov ebp, esp
+    mov ebx, [ebp+8]    ; Load space 
+    mov eax, 18 ; Command 18 draw vline
     int 0x80
     pop ebp
     ret

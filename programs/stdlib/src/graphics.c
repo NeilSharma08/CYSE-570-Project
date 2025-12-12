@@ -34,27 +34,32 @@ void draw_rect(int x, int y, int w, int h, uint32_t color) {
 }
 
 void draw_hline(int x_s, int y_s, int x_e, uint32_t color, int thickness) {
-    for (int xx = x_s; xx <= x_e; xx++) {
+    return peachos_draw_hline(x_s, y_s, x_e, color, thickness); 
+    
+/*     for (int xx = x_s; xx <= x_e; xx++) {
         for (int yy = y_s - thickness + 1; yy < y_s + thickness; yy++) {
             putpixel(xx, yy, color);
         }
     }
+*/
 }
 
 void draw_vline(int x_s, int y_s, int y_e, uint32_t color, int thickness) {
-    for (int yy = y_s; yy <= y_e; yy++) {
+    return peachos_draw_vline(x_s, y_s, y_e, color, thickness);
+/*     for (int yy = y_s; yy <= y_e; yy++) {
         for (int xx = x_s - thickness + 1; xx < x_s + thickness; xx++) {
             putpixel(xx, yy, color);
         }
-    }
+    } */
 }
 
 void draw_grid(int spacing) {
-    for (int xx = 0; xx <= 1024; xx += spacing){
+    return peachos_draw_grid(spacing);
+/*     for (int xx = 0; xx <= 1024; xx += spacing){
     	draw_vline(xx, 0, 768, 0, 3);
     }
     
     for (int yy = 0; yy <= 768; yy += spacing){
         draw_hline(0, yy, 1024, 0, 3);
-    }
+    } */
 }

@@ -71,14 +71,14 @@ int main(){
     uint32_t cube_color = 0xff0000;
     
     while(1){
-        draw_rect(0, 0, 1024, 768, 0xffffff);
-        draw_grid(64);
+        //draw_rect(0, 0, 1024, 768, 0xffffff);
+        //draw_grid(64);
         draw_rect(50, 30, 30, 30, 0xffff00);
         
         draw_rect(player_one.x, player_one.y, 54, 54, cube_color);
         draw_rect(player_two.x, player_two.y, 54, 54, cube_color);
         
-        while(peachos_get_ticks() - start < 60){}
+        while(peachos_get_ticks() - start < 1000){}
         
         key = peachos_getkey();
         if(key){

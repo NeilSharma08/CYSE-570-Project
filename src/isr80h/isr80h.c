@@ -21,4 +21,7 @@ void isr80h_register_commands()
     isr80h_register_command(SYSTEM_COMMAND12_GET_TICKS, isr80h_command12_get_ticks);
     isr80h_register_command(SYSTEM_COMMAND13_PUT_PIXEL, isr80h_command13_put_pixel);
     isr80h_register_command(SYSTEM_COMMAND15_DRAW_RECT, isr80h_command15_draw_rect);
+    isr80h_register_command(SYSTEM_COMMAND16_DRAW_HLINE, isr80h_command16_draw_hline);
+    isr80h_register_command(SYSTEM_COMMAND17_DRAW_VLINE, isr80h_command17_draw_vline);
+    isr80h_register_command(SYSTEM_COMMAND18_DRAW_GRID, isr80h_command18_draw_grid);
 }

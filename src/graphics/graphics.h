@@ -31,6 +31,9 @@ struct vbe_mode_info {
 
 
 void graphics_init();
-int putpixel(int x, int y, uint32_t color);
-void draw_rect(int x, int y, int w, int h, uint32_t color);
+void putpixel(int x, int y, uint32_t color);
+void sys_draw_rect(int x, int y, int w, int h, uint32_t color);
+void sys_draw_hline(int x_s, int y_s, int x_e, uint32_t color, int thickness);
+void sys_draw_vline(int x_s, int y_s, int y_e, uint32_t color, int thickness);
+void sys_draw_grid(int spacing);
 char* itoa(int i);
