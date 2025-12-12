@@ -16,8 +16,12 @@
 #include "disk/streamer.h"
 #include "task/tss.h"
 #include "gdt/gdt.h"
+#include "graphics/graphics.h"
 #include "config.h"
 #include "status.h"
+//#include "pit/pit.h"
+#include "pit/ticks.h"
+
 
 uint16_t* video_mem = 0;
 uint16_t terminal_row = 0;
@@ -27,6 +31,7 @@ uint16_t terminal_make_char(char c, char colour)
 {
     return (colour << 8) | c;
 }
+
 
 void terminal_putchar(int x, int y, char c, char colour)
 {
@@ -99,7 +104,6 @@ void print(const char* str)
     }
 }
 
-
 static struct paging_4gb_chunk* kernel_chunk = 0;
 
 void panic(const char* msg)
@@ -127,10 +131,11 @@ struct gdt_structured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {
 
 void kernel_main()
 {
-    terminal_initialize();
+    pit_set_frequency(1000);
+    //terminal_initialize();
     memset(gdt_real, 0x00, sizeof(gdt_real));
     gdt_structured_to_gdt(gdt_real, gdt_structured, PEACHOS_TOTAL_GDT_SEGMENTS);
-
+    
     // Load the gdt
     gdt_load(gdt_real, sizeof(gdt_real)-1);
 
@@ -143,8 +148,14 @@ void kernel_main()
     // Search and initialize the disks
     disk_search_and_init();
 
+    //pic_remap();
+    
     // Initialize the interrupt descriptor table
     idt_init();
+    
+    pic_timer_init();
+    enable_interrupts();
+    
 
     // Setup the TSS
     memset(&tss, 0x00, sizeof(tss));
@@ -165,19 +176,20 @@ void kernel_main()
 
     // Register the kernel commands
     isr80h_register_commands();
-
+    
+    
     // Initialize all the system keyboards
     keyboard_init();
         
     struct process* process = 0;
-    int res = process_load_switch("0:/shell.elf", &process);
+    int res = process_load_switch("0:/game.elf", &process);
     if (res != PEACHOS_ALL_OK)
     {
-        panic("Failed to load shell.elf\n");
+        panic("Failed to load game.elf\n");
     }
-
-/*
-    struct command_argument argument;
+    
+    
+    /*struct command_argument argument;
     strcpy(argument.argument, "Testing!");
     argument.next = 0x00; 
 
@@ -192,8 +204,8 @@ void kernel_main()
     strcpy(argument.argument, "Abc!");
     argument.next = 0x00; 
     process_inject_arguments(process, &argument);
-*/
-    task_run_first_ever_task();
+*
+    task_run_first_ever_task();*/
 
     while(1) {}
 }

@@ -19,6 +19,8 @@ struct keyboard
     struct keyboard* next;
 };
 
+int peachos_getkey();
+
 void keyboard_init();
 void keyboard_backspace(struct process* process);
 void keyboard_push(char c);

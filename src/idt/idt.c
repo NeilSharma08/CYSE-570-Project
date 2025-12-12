@@ -1,4 +1,5 @@
 #include "idt.h"
+#include <stdint.h>
 #include "config.h"
 #include "kernel.h"
 #include "memory/memory.h"
@@ -6,6 +7,8 @@
 #include "task/process.h"
 #include "io/io.h"
 #include "status.h"
+#include "pit/ticks.h"
+
 struct idt_desc idt_descriptors[PEACHOS_TOTAL_INTERRUPTS];
 struct idtr_desc idtr_descriptor;
 
@@ -59,8 +62,10 @@ void idt_handle_exception()
     task_next();
 }
 
+
 void idt_clock()
 {
+    
     outb(0x20, 0x20);
     
     // Switch to the next task

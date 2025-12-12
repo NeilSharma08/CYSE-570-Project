@@ -31,4 +31,8 @@ void peachos_process_get_arguments(struct process_arguments* arguments);
 int peachos_system(struct command_argument* arguments);
 int peachos_system_run(const char* command);
 void peachos_exit();
+void peachos_sleep(int seconds);
+void peachos_wake();
+unsigned int peachos_get_ticks();
+unsigned int peachos_get_idle_ticks();
 #endif

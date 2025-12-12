@@ -81,10 +81,12 @@ void keyboard_push(char c)
 
 char keyboard_pop()
 {
+/*
     if (!task_current())
     {
         return 0;
     }
+ */
 
     struct process* process = task_current()->process;
     int real_index = process->keyboard.head % sizeof(process->keyboard.buffer);

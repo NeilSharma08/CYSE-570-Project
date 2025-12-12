@@ -10,10 +10,17 @@
 #include "loader/formats/elfloader.h"
 #include "kernel.h"
 
+
 // The current process that is running
 struct process* current_process = 0;
 
 static struct process* processes[PEACHOS_MAX_PROCESSES] = {};
+
+// External function to get system ticks (to be implemented in your timer driver)
+extern uint32_t pic_timer_get_ticks();
+
+// Defined PIT frequency in config.h. Ticks per second set to 100
+
 
 int process_free_process(struct process* process);
 
@@ -444,6 +451,10 @@ int process_map_memory(struct process* process)
             res = process_map_binary(process);
         break;
 
+        case PROCESS_FILETYPE_UNKNOWN:
+            // Don't map any program data for the idle task
+            break;
+
         default:
             panic("process_map_memory: Invalid filetype\n");
     }
@@ -515,10 +526,13 @@ int process_load_for_slot(const char* filename, struct process** process, int pr
     }
 
     process_init(_process);
-    res = process_load_data(filename, _process);
-    if (res < 0)
+    if (filename)
     {
-        goto out;
+        res = process_load_data(filename, _process);
+        if (res < 0)
+        {
+            goto out;
+        }
     }
 
     _process->stack = kzalloc(PEACHOS_USER_PROGRAM_STACK_SIZE);
@@ -528,7 +542,10 @@ int process_load_for_slot(const char* filename, struct process** process, int pr
         goto out;
     }
 
-    strncpy(_process->filename, filename, sizeof(_process->filename));
+    if (filename)
+    {
+        strncpy(_process->filename, filename, sizeof(_process->filename));
+    }
     _process->id = process_slot;
 
     // Create a task
@@ -567,4 +584,88 @@ out:
        // Free the process data
     }
     return res;
+}
+
+void process_sleep(struct process* process, int seconds)
+{
+    // check for process validity
+    if (!process)
+    {
+        return;
+    }
+    // yield if time is up
+    if (seconds <= 0)
+    {
+        task_next();
+        return;
+    }
+    
+    // Don't let the last NON-IDLE ready task sleep - count how many non-idle tasks are ready
+    int ready_count = 0;
+    struct task* t = task_head;
+    while (t)
+    {
+        if (t->state == TASK_READY && !(t->flags & TASK_FLAG_IDLE))
+        {
+            ready_count++;
+        }
+        t = t->next;
+    }
+    
+    // If this is the only non-idle ready task, just return immediately (don't sleep)
+    // This ensures idle can always run when needed
+    if (ready_count <= 1)
+    {
+        return;
+    }
+    
+    // !!! implement this in the pic/ticks.c -- export pic_timer_get_ticks !!!
+    uint32_t current_ticks = pic_timer_get_ticks();
+    // Convert seconds -> ticks and set the wake time for the process.
+    // PIT_TICKS_PER_SECOND is the number of ticks in one second, so multiply
+    // seconds by that value to get ticks.
+    process->wake_tick = current_ticks + (seconds * PIT_TICKS_PER_SECOND);
+
+    // should the state be in the task or process?
+    process->state = PROCESS_STATE_BLOCKED;
+     if (process->task) 
+    {
+        // add to task.c -- make a task state
+        process->task->state = TASK_BLOCKED;
+    }
+
+    task_next();
+}
+
+void process_wake_up_pending(void)
+{
+    uint32_t current_ticks = pic_timer_get_ticks();
+
+    for (int i = 0; i < PEACHOS_MAX_PROCESSES; i++)
+    {
+        struct process* process = processes[i];
+        if (!process)
+        {
+            continue;
+        }
+
+        if (process->state == PROCESS_STATE_BLOCKED && process->wake_tick > 0)
+        {
+            if (current_ticks >= process->wake_tick)
+            {
+                process_wake(process);
+            }
+        }
+    }
+}
+
+int process_wake(struct process* process)
+{
+    process->state = PROCESS_STATE_READY;
+    process->wake_tick = 0;
+    if (process->task)
+    {
+        process->task->state = TASK_READY;
+    }
+    return 0;
 }
