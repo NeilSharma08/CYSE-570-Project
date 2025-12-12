@@ -30,6 +30,13 @@ VolumeID                dd 0xD105
 VolumeIDString          db 'PEACHOS BOO'
 SystemIDString          db 'FAT16   '
 
+%define MODEINFO_ADDR 0x5000
+%define VBE_MODE 0x0118
+%define VBE_LFB_BIT 0x4000
+;%define MODEINFO_SRC      0x00005000    ; where INT 0x10 wrote ModeInfo
+;%define MODEINFO_LEN      256
+;%define MODEINFO_DEST     0x00101000    ; safe place inside kernel load area
+
 
 start:
     jmp 0:step2
@@ -48,6 +55,46 @@ step2:
 
 .load_protected:
     cli
+    
+    mov ax, 0x0000
+    mov ds, ax
+    mov es, ax
+    mov di, MODEINFO_ADDR
+
+    ; Call VBE Get Mode Info (AX=0x4F01, CX=mode)
+    mov ax, 0x4F01
+    mov cx, VBE_MODE
+    int 0x10
+    ; AX = 0x004F on success
+    cmp ax, 0x004F
+    je .vbe_got_modeinfo
+
+.vbe_failed:
+    ; If VBE failed, just continue to protected mode (fallback to text)
+    ; Optionally you can set a flag here at a known place in low memory.
+    jmp .vbe_continue
+
+.vbe_got_modeinfo:
+    ; now set the mode with linear framebuffer bit
+    mov ax, 0x4F02
+    mov bx, VBE_MODE
+    or bx, VBE_LFB_BIT
+    int 0x10
+    cmp ax, 0x004F
+    jne .vbe_failed
+
+    ; success — BIOS filled 256 bytes at MODEINFO_ADDR
+    ; (leave it for kernel to read at physical 0x5000)
+
+.vbe_continue:
+    ; restore segments (still real mode) and continue to enable protected mode
+    mov ax, 0x0000
+    mov ds, ax
+    mov es, ax
+    mov ss, ax
+    mov sp, 0x7c00
+    ; (fall through to lgdt / CR0 enable)    
+
     lgdt[gdt_descriptor]
     mov eax, cr0
     or eax, 0x1
@@ -105,6 +152,14 @@ gdt_descriptor:
 
 
     call ata_lba_read
+    
+    ; copy VBE ModeInfo (256 bytes) from low memory to kernel area
+    ;mov esi, MODEINFO_SRC    ; source physical (linear) addr
+    ;mov edi, MODEINFO_DEST   ; destination physical (linear) addr
+    ;mov ecx, MODEINFO_LEN
+    ;cld
+    ;rep movsb                ; copies 256 bytes
+
     jmp CODE_SEG:0x0100000
 
 ata_lba_read:

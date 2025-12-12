@@ -20,6 +20,7 @@
 #include "gdt/gdt.h"
 #include "config.h"
 #include "status.h"
+#include "graphics/graphics.h"
 
 uint16_t* video_mem = 0;
 uint16_t terminal_row = 0;
@@ -154,6 +155,9 @@ void kernel_main()
     // Initialize PIT/ticks handling 
     pic_timer_init();
 
+    // Initialize graphics
+    //graphics_init();
+
     // Setup the TSS
     memset(&tss, 0x00, sizeof(tss));
     tss.esp0 = 0x600000;
@@ -179,12 +183,12 @@ void kernel_main()
 
     // Initialize all the system keyboards
     keyboard_init();
-        
+    print("Hello world!\n");    
     struct process* process = 0;
-    int res = process_load("0:/shell.elf", &process);
+    int res = process_load("0:/game.elf", &process);
     if (res != PEACHOS_ALL_OK)
     {
-        panic("Failed to load shell.elf\n");
+        panic("Failed to load game.elf\n");
     }
 
     task_run_first_ever_task();

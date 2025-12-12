@@ -2,6 +2,7 @@
 #define PEACHOS_H
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 
 struct command_argument
@@ -35,4 +36,5 @@ void peachos_sleep(int seconds);
 void peachos_wake();
 unsigned int peachos_get_ticks();
 unsigned int peachos_get_idle_ticks();
+void peachos_put_pixel(int x, int y, uint32_t color);
 #endif

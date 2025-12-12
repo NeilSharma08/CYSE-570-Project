@@ -19,4 +19,5 @@ void isr80h_register_commands()
     isr80h_register_command(SYSTEM_COMMAND10_SLEEP, isr80h_command10_sleep);
     isr80h_register_command(SYSTEM_COMMAND11_WAKE, isr80h_command11_wake);
     isr80h_register_command(SYSTEM_COMMAND12_GET_TICKS, isr80h_command12_get_ticks);
+    isr80h_register_command(SYSTEM_COMMAND13_PUT_PIXEL, isr80h_command13_put_pixel);
 }

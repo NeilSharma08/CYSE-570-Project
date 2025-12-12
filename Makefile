@@ -1,4 +1,4 @@
-FILES = ./build/kernel.asm.o ./build/kernel.o ./build/loader/formats/elf.o ./build/loader/formats/elfloader.o  ./build/isr80h/isr80h.o ./build/isr80h/process.o ./build/isr80h/heap.o ./build/keyboard/keyboard.o ./build/keyboard/classic.o ./build/isr80h/io.o ./build/isr80h/misc.o ./build/disk/disk.o ./build/disk/streamer.o ./build/task/process.o ./build/task/task.o ./build/task/task.asm.o ./build/task/tss.asm.o ./build/fs/pparser.o ./build/fs/file.o ./build/fs/fat/fat16.o ./build/string/string.o ./build/idt/idt.asm.o ./build/idt/idt.o ./build/memory/memory.o ./build/io/io.asm.o ./build/gdt/gdt.o ./build/gdt/gdt.asm.o ./build/memory/heap/heap.o ./build/memory/heap/kheap.o ./build/memory/paging/paging.o ./build/memory/paging/paging.asm.o ./build/pit/ticks.o ./build/pit/ticks.asm.o ./build/task/idle.o ./build/task/idle.asm.o
+FILES = ./build/kernel.asm.o ./build/kernel.o ./build/loader/formats/elf.o ./build/loader/formats/elfloader.o  ./build/isr80h/isr80h.o ./build/isr80h/process.o ./build/isr80h/heap.o ./build/keyboard/keyboard.o ./build/keyboard/classic.o ./build/isr80h/io.o ./build/isr80h/misc.o ./build/disk/disk.o ./build/disk/streamer.o ./build/task/process.o ./build/task/task.o ./build/task/task.asm.o ./build/task/tss.asm.o ./build/fs/pparser.o ./build/fs/file.o ./build/fs/fat/fat16.o ./build/string/string.o ./build/idt/idt.asm.o ./build/idt/idt.o ./build/memory/memory.o ./build/io/io.asm.o ./build/gdt/gdt.o ./build/gdt/gdt.asm.o ./build/memory/heap/heap.o ./build/memory/heap/kheap.o ./build/memory/paging/paging.o ./build/memory/paging/paging.asm.o ./build/pit/ticks.o ./build/pit/ticks.asm.o ./build/task/idle.o ./build/task/idle.asm.o ./build/graphics/graphics.o
 # Create any needed build subdirectories automatically. This computes the
 # unique set of directories from $(FILES) and makes them before object files
 # are created. This prevents errors like "can't create ./build/string/string.o".
@@ -25,6 +25,7 @@ all: ./bin/boot.bin ./bin/kernel.bin user_programs
 	sudo cp ./programs/player1/player1.elf /mnt/d
 	sudo cp ./programs/player2/player2.elf /mnt/d
 	sudo cp ./programs/busywait/busywait.elf /mnt/d
+	sudo cp ./programs/game/game.elf /mnt/d
 
 	sudo umount /mnt/d
 ./bin/kernel.bin: $(FILES)
@@ -84,6 +85,8 @@ all: ./bin/boot.bin ./bin/kernel.bin user_programs
 ./build/keyboard/classic.o: ./src/keyboard/classic.c
 	i686-elf-gcc $(INCLUDES) -I./src/keyboard $(FLAGS) -std=gnu99 -c ./src/keyboard/classic.c -o ./build/keyboard/classic.o
 
+./build/graphics/graphics.o: ./src/graphics/graphics.c
+	i686-elf-gcc $(INCLUDES) -I./src/idt $(FLAGS) -std=gnu99 -c ./src/graphics/graphics.c -o ./build/graphics/graphics.o
 
 ./build/idt/idt.o: ./src/idt/idt.c
 	i686-elf-gcc $(INCLUDES) -I./src/idt $(FLAGS) -std=gnu99 -c ./src/idt/idt.c -o ./build/idt/idt.o
@@ -155,6 +158,7 @@ user_programs:
 	cd ./programs/player1 && $(MAKE) all
 	cd ./programs/player2 && $(MAKE) all
 	cd ./programs/busywait && $(MAKE) all
+	cd ./programs/game && $(MAKE) all
 
 user_programs_clean:
 	cd ./programs/stdlib && $(MAKE) clean
@@ -163,6 +167,7 @@ user_programs_clean:
 	cd ./programs/player1 && $(MAKE) clean
 	cd ./programs/player2 && $(MAKE) clean
 	cd ./programs/busywait && $(MAKE) clean
+	cd ./programs/game && $(MAKE) clean
 
 clean: user_programs_clean
 	rm -rf ./bin/boot.bin
