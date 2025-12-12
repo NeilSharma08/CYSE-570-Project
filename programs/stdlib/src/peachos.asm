@@ -117,6 +117,9 @@ peachos_exit:
     pop ebp
     ret
 
+; All assembly fuctions below are addtions to the kernel.
+; These are global fuctions called by C program wrappers.
+
 ; void peachos_sleep(int seconds)
 peachos_sleep:
     push ebp
@@ -153,7 +156,7 @@ peachos_put_pixel:
     mov ebx, [ebp+8]    ; Load x 
     mov ecx, [ebp+12]   ; Load y 
     mov edx, [ebp+16]   ; Load color 
-    mov eax, 13 ; Command 12 put pixel 
+    mov eax, 13 ; Command 13 put pixel 
     int 0x80
     pop ebp
     ret

@@ -38,7 +38,7 @@
 
 #define PEACHOS_KEYBOARD_BUFFER_SIZE 1024
 
-// HZ is the number of ticks per second
+// Added this for frequency, which is the number of ticks per second
 #define PIT_TICKS_PER_SECOND 1000
 
 #endif

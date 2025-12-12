@@ -12,10 +12,7 @@
 
 typedef unsigned char PROCESS_FILETYPE;
 
-/** Process states. Mapped to task states.
- * Clean up be have states in config.h later
- * if needed.
- */ 
+// Process states. Mapped to task states. 
 
 #define PROCESS_STATE_READY 0
 #define PROCESS_STATE_BLOCKED 1
@@ -94,7 +91,7 @@ void process_get_arguments(struct process* process, int* argc, char*** argv);
 int process_inject_arguments(struct process* process, struct command_argument* root_argument);
 int process_terminate(struct process* process);
 
-// Sleep and wake functions 
+// New fuctions we added: Sleep and wake functions that are used in process.c
 void process_sleep(struct process* process, int seconds);
 void process_wake_up_pending(void); // Helper to check sleepers
 int process_wake(struct process* process);

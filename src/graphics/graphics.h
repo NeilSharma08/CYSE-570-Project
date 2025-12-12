@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#define MODEINFO_PHYS 0x00005000
+#define MODEINFO_PHYS 0x00005000 // Address for graphic mode
 
 
 
@@ -29,7 +29,7 @@ struct vbe_mode_info {
 } __attribute__((packed));
 
 
-
+// Prototypes for graphics.c fuctions
 void graphics_init();
 void putpixel(int x, int y, uint32_t color);
 void sys_draw_rect(int x, int y, int w, int h, uint32_t color);

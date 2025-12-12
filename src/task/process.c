@@ -586,6 +586,13 @@ out:
     return res;
 }
 
+/* The next three fuctions were added to the kernel to add sleep/wake functionality The sleep 
+and wake functions implement a state-based approach to pause processes and tasks.
+The sleep and wake functions are system calls that transition the process to kernel mode. 
+The system call handler (isr80h_command10_sleep) calls the kernel process process_sleep. 
+This kernel process calculates the wake time and sets the process and task states to BLOCKED. */
+
+// Accepts process struct and the time to sleep.
 void process_sleep(struct process* process, int seconds)
 {
     // check for process validity
@@ -600,7 +607,7 @@ void process_sleep(struct process* process, int seconds)
         return;
     }
     
-    // Don't let the last NON-IDLE ready task sleep - count how many non-idle tasks are ready
+    // Don't let the last NON-IDLE ready task sleep. Counts how many non-idle tasks are ready.
     int ready_count = 0;
     struct task* t = task_head;
     while (t)
@@ -619,24 +626,25 @@ void process_sleep(struct process* process, int seconds)
         return;
     }
     
-    // !!! implement this in the pic/ticks.c -- export pic_timer_get_ticks !!!
+    // The get ticks is implemented this in the pic/ticks.c.
     uint32_t current_ticks = pic_timer_get_ticks();
-    // Convert seconds -> ticks and set the wake time for the process.
-    // PIT_TICKS_PER_SECOND is the number of ticks in one second, so multiply
-    // seconds by that value to get ticks.
+    // Converts seconds to ticks and sets the wake time for the process.
+    // PIT_TICKS_PER_SECOND is the number of ticks in one second. 
+    // Seconds are multiplied by ticks/sec to calculate ticks.
     process->wake_tick = current_ticks + (seconds * PIT_TICKS_PER_SECOND);
 
-    // should the state be in the task or process?
+    // Sets the state of process to blocked.
     process->state = PROCESS_STATE_BLOCKED;
      if (process->task) 
     {
-        // add to task.c -- make a task state
+        // Sets the task in the process to blocked.
         process->task->state = TASK_BLOCKED;
     }
 
     task_next();
 }
 
+// Checks fo rprocesses to wake up. This is called by the PIT code.
 void process_wake_up_pending(void)
 {
     uint32_t current_ticks = pic_timer_get_ticks();
@@ -659,6 +667,7 @@ void process_wake_up_pending(void)
     }
 }
 
+// Wakes up process and changes states to READY!
 int process_wake(struct process* process)
 {
     process->state = PROCESS_STATE_READY;

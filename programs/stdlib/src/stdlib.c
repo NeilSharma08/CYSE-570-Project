@@ -1,3 +1,10 @@
+/* Four user fuctions were added to this libary, including:
+atoi()int atoi(const char *s);  // converts string to integer 
+int abs(int n);  // return absolute value of integer
+void sleep(int seconds) // wrapper for sleep asm code
+void wake // wrapper for wake asm code
+*/
+
 #include "stdlib.h"
 #include "peachos.h"
 

@@ -1,3 +1,7 @@
+/* All code in ticks.c, ticks.h, and ticks.asm is new. This is for the PIT, keeps track 
+of the CPU cycles (or ticks). These system functions in C and assembly were added 
+to implement the PIT. This file is the PIT code.*/
+
 #include "ticks.h"
 #include "kernel.h"
 #include "idt/idt.h"
@@ -6,15 +10,13 @@
 #include "io/io.h"
 #include <stdint.h>
 
-
+// Enables access to the tick counter
 uint32_t get_ticks(void) {
-    /*Warning: disable interrrupts to prevent potential race condition. Created cli and sti in c
-    * but disabling interrupts causes problems when called frequently from syscalls.
-    * I think this is atomic so don't need to disable interrupts    */
     uint32_t count = pic_timer_get_ticks();   // calls the assembly function to get ticks
     return count;
 }
 
+ // Call back routine to handle interrupt request IR0.
 void pic_timer_callback(struct interrupt_frame* frame)
 {
     // Increment the assembly-defined tick counter
@@ -30,12 +32,13 @@ void pic_timer_callback(struct interrupt_frame* frame)
     task_next();
 }
 
+// Initialzes PIT in kernel.c
 void pic_timer_init(void)
 {
     idt_register_interrupt_callback(0x20, pic_timer_callback);
 }
 
-/* program PIT channel 0 to the requested frequency */
+// sets PIT channel 0 to the requested frequency 
 void pit_set_frequency(uint32_t hz)
 {
     const uint32_t PIT_BASE = 1193182;

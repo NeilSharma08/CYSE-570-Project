@@ -62,6 +62,9 @@ out:
     return task;
 }
 
+/* The task_get_next() was modified to use the state-based approach. 
+* These modification change the way the schedulers finds the next task. 
+*/
 struct task* task_get_next()
 {
     if (!current_task)
@@ -111,7 +114,6 @@ struct task* task_get_next()
         return idle_fallback;
     }
 
-    // No ready tasks at all - shouldn't happen with idle task
     // Return current_task as last resort
     if (current_task)
     {
@@ -173,8 +175,7 @@ void task_next()
 int task_switch(struct task *task)
 {
     current_task = task;
-    /* THis was causing problems.  Added to ensure the global current process follows the running task so
-     * per-process resources are accurate. */
+    // Added to ensure the per-process resources are accurate. 
     process_switch(task->process);
     paging_switch(task->page_directory);
     return 0;

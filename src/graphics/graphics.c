@@ -1,3 +1,9 @@
+/*
+All code in graphics.c is our addition to the kernel. The code includes kernel 
+system functions called by the interrupts service routine. 
+The implementation of these system functions improves graphics implementation 
+by increasing the speed of the game play and visual displays.  
+*/
 #include <stddef.h>
 #include <stdint.h>
 #include "graphics.h"
@@ -10,17 +16,14 @@
 
 uint32_t* fb = 0;
 
+// initializes graphics mode in the kernel 
 void graphics_init() {
     struct vbe_mode_info* vbe = (struct vbe_mode_info*)(0x00005000);
     vbe = (struct vbe_mode_info*) 0x5000;
     fb = (uint32_t*) vbe->physbase;
-    //print(itoa((int)fb));
-    //print("\n");
-    //print(itoa((int)vbe));
-    //print("\n");
 }
 
-
+//System calls that run as interrupt service routines
 void putpixel(int x, int y, uint32_t color){
     //uint32_t* fb = (uint32_t*)0xFD000000;
     //print("printing interrupt pixel\n");
@@ -69,7 +72,7 @@ void sys_draw_grid(int spacing) {
     }
 }
 
-
+// Helper function for data processing - converts int to string.
 char* itoa(int i)
 {
     static char text[12];

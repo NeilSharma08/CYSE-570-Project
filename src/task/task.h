@@ -4,9 +4,13 @@
 #include "config.h"
 #include "memory/paging/paging.h"
 
+// Added state states for task struct 
 #define TASK_READY 0
 #define TASK_BLOCKED 1
 
+/* The flag was intended for idle task, 
+* which isn't implemented. 
+*/
 #define TASK_FLAG_IDLE 0b00000001
 
 struct interrupt_frame;
@@ -31,9 +35,7 @@ struct registers
 struct process;
 struct task
 {
-    /**
-     * The page directory of the task
-     */
+    /* The page directory of the task */
     struct paging_4gb_chunk* page_directory;
 
     // The registers of the task when the task is not running
@@ -76,7 +78,7 @@ void* task_get_stack_item(struct task* task, int index);
 void* task_virtual_address_to_physical(struct task* task, void* virtual_address);
 void task_next();
 
-// Expose task list head for checking ready tasks
+// Task list head used for checking ready tasks.
 extern struct task* task_head;
 
 #endif
