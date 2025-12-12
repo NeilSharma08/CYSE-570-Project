@@ -5,6 +5,7 @@
 #include "task/idle.h"
 #include "graphics/graphics.h"
 #include "kernel.h"
+#include "status.h"
 
 void* isr80h_command0_sum(struct interrupt_frame* frame)
 {
@@ -33,6 +34,18 @@ void* isr80h_command13_put_pixel(struct interrupt_frame* frame)
     // Call the privileged kernel implementation and return the result
     int result = putpixel(x, y, color);
     
-    // Return value is stored in EAX for the user mode
+    // Return value in EAX for the user mode??
     return (void*)(intptr_t)result;
+}
+
+void* isr80h_command15_draw_rect(struct interrupt_frame* frame){
+    int x = frame->ebx;
+    int y = frame->ecx;
+    int w = frame->edx;
+    int h = frame->esi; // Need more registers for args
+    uint32_t color = frame->edi;
+
+    draw_rect(x, y, w, h, color); 
+
+    return (void*)PEACHOS_ALL_OK;
 }

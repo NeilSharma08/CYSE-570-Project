@@ -32,4 +32,5 @@ struct vbe_mode_info {
 
 void graphics_init();
 int putpixel(int x, int y, uint32_t color);
+void draw_rect(int x, int y, int w, int h, uint32_t color);
 char* itoa(int i);

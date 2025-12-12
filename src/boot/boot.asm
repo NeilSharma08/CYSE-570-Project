@@ -64,7 +64,7 @@ step2:
     ; Call VBE Get Mode Info (AX=0x4F01, CX=mode)
     mov ax, 0x4F01
     mov cx, VBE_MODE
-    int 0x10
+    ; int 0x10
     ; AX = 0x004F on success
     cmp ax, 0x004F
     je .vbe_got_modeinfo

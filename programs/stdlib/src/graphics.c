@@ -24,11 +24,13 @@ void putpixel(int x, int y, uint32_t color) {
 }
 
 void draw_rect(int x, int y, int w, int h, uint32_t color) {
-    for (int yy = 0; yy < h; yy++) {
+    return peachos_draw_rect(x, y, w, h, color);
+    
+/*     for (int yy = 0; yy < h; yy++) {
         for (int xx = 0; xx < w; xx++) {
             putpixel(x + xx, y + yy, color);
         }
-    }
+    } */
 }
 
 void draw_hline(int x_s, int y_s, int x_e, uint32_t color, int thickness) {

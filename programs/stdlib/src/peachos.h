@@ -37,4 +37,5 @@ void peachos_wake();
 unsigned int peachos_get_ticks();
 unsigned int peachos_get_idle_ticks();
 void peachos_put_pixel(int x, int y, uint32_t color);
+void peachos_draw_rect();
 #endif

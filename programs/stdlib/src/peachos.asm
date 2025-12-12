@@ -16,6 +16,7 @@ global peachos_wake:function
 global peachos_get_ticks:function
 global peachos_get_idle_ticks:function
 global peachos_put_pixel:function
+global peachos_draw_rect:function
 
 ; void print(const char* filename)
 print:
@@ -150,6 +151,20 @@ peachos_put_pixel:
     mov ecx, [ebp+12]   ; Load y 
     mov edx, [ebp+16]   ; Load color 
     mov eax, 13 ; Command 12 put pixel 
+    int 0x80
+    pop ebp
+    ret
+
+; void peachos_draw_rect() 
+peachos_draw_rect: 
+    push ebp
+    mov ebp, esp
+    mov ebx, [ebp+8]    ; Load x 
+    mov ecx, [ebp+12]   ; Load y 
+    mov edx, [ebp+16]   ; Load w
+    mov esi, [ebp+20]   ; Load h
+    mov edi, [ebp+24]   ; Load color 
+    mov eax, 15 ; Command 14 draw rect
     int 0x80
     pop ebp
     ret
