@@ -38,6 +38,13 @@ int atoi(const char *s)
   return n;
 }
 
+int abs(int n){
+    if (n < 0) {
+        n = -n;
+    }
+    return n;
+}
+
 void* malloc(size_t size)
 {
     return peachos_malloc(size);
