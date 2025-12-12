@@ -156,7 +156,7 @@ void kernel_main()
     pic_timer_init();
 
     // Initialize graphics
-    //graphics_init();
+    graphics_init();
 
     // Setup the TSS
     memset(&tss, 0x00, sizeof(tss));

@@ -24,12 +24,12 @@ void* isr80h_command13_put_pixel(struct interrupt_frame* frame)
     // Arg1 (x) is frame->ebx
     // Arg2 (y) is frame->ecx
     // Arg3 (color) is frame->edx
-    print("received interput to print pixel\n");
+    //print("received interput to print pixel\n");
     int x = frame->ebx;
     int y = frame->ecx;
     uint32_t color = frame->edx;
-    print(itoa(color));
-    print("\n");
+    //print(itoa(color));
+    //print("\n");
     // Call the privileged kernel implementation and return the result
     int result = putpixel(x, y, color);
     

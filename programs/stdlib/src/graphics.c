@@ -12,7 +12,11 @@ void graphics_init() {
 }
 */
 void putpixel(int x, int y, uint32_t color) {
-    printf("I'm drawing %i %i %i\n", x, y, color);
+    //printf("I'm drawing %i %i %i\n", x, y, color);
+    
+    if(x < 0 || x > 1280 || y < 0 || y > 768){
+    	return;
+    }
     
     return peachos_put_pixel(x, y, color);
     //uint32_t* pixel = (uint32_t*)((uint8_t*) fb + y * 3072 + x * 3);
