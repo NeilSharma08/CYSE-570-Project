@@ -47,9 +47,6 @@ all: ./bin/boot.bin ./bin/kernel.bin user_programs
 ./build/idt/idt.asm.o: ./src/idt/idt.asm
 	nasm -f elf -g ./src/idt/idt.asm -o ./build/idt/idt.asm.o
 
-./build/pit/ticks.o: ./src/pit/ticks.asm
-	nasm -f elf -g ./src/pit/ticks.asm -o ./build/pit/ticks.o
-
 ./build/loader/formats/elf.o: ./src/loader/formats/elf.c
 	i686-elf-gcc $(INCLUDES) -I./src/loader/formats $(FLAGS) -std=gnu99 -c ./src/loader/formats/elf.c -o ./build/loader/formats/elf.o
 
