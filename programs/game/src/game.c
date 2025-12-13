@@ -331,7 +331,7 @@ int main(){
             // after a few loops, every 15 frames, a zombie will spawn again.
             if(spawning){
                 // spawn zombie and decrement
-                spawn_zombie(player_one, player_two, zombies, wave - spawning);
+                spawn_zombie(zombies, wave - spawning);
                 spawning--;
             }
         }
