@@ -139,12 +139,12 @@ void move_alive_zombie(struct Zombie * zombie, struct Player * player_one, struc
     
     if(player_one->health <= 0){
         player_one->health = 0;
-        player_one->alive = true;
+        player_one->alive = false;
     }
     
     if(player_two->health <= 0){
         player_two->health = 0;
-        player_two->alive = true;
+        player_two->alive = false;
     }
 }
 
